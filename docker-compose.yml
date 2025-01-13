@@ -6,21 +6,19 @@ services:
       - SPARK_MODE=master
       - SPARK_MASTER_PORT=7077
       - SPARK_MASTER_WEBUI_PORT=8080
-      - SPARK_CONNECT_PORT=6066 # Example port for Spark Connect
+      - SPARK_CONNECT_PORT=6066
       - SPARK_NO_DAEMONIZE=true
     ports:
-      - "8080:8080"  # Spark Master Web UI
-      - "7077:7077"  # Spark Master port
+      - "8080:8080" # Spark Master Web UI
+      - "7077:7077" # Spark Master port
       - "15003:15002"
-      # - "4040:4040"
-      #      - "6066:6066"  # Spark Connect port
     networks:
       - spark-network
       - monitoring
     command: /opt/entrypoint.sh /opt/spark/sbin/start-master.sh
     volumes:
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./metrics.properties:/opt/spark/conf/metrics.properties 
+      - ./metrics.properties:/opt/spark/conf/metrics.properties
 
   spark-worker:
     image: 192.168.0.66:5000/spark-flex:3.5.4
@@ -40,7 +38,7 @@ services:
     command: /opt/spark/sbin/start-worker.sh spark://spark-master:7077
     volumes:
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./metrics.properties:/opt/spark/conf/metrics.properties 
+      - ./metrics.properties:/opt/spark/conf/metrics.properties
 
   spark-connect:
     image: 192.168.0.66:5000/spark-flex:3.5.4
@@ -53,7 +51,7 @@ services:
       - spark-master
     ports:
       - "4040:4040"
-      - "6066:6066"  # Spark Connect port
+      - "6066:6066"
       - "15002:15002"
     networks:
       - spark-network
@@ -61,12 +59,10 @@ services:
     command: /opt/spark/sbin/start-connect-server.sh --master spark://spark-master:7077
     volumes:
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./metrics.properties:/opt/spark/conf/metrics.properties 
+      - ./metrics.properties:/opt/spark/conf/metrics.properties
 
 networks:
   spark-network:
     driver: bridge
   monitoring:
     external: true
-
-
